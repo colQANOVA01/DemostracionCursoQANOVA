@@ -6,7 +6,7 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.Test;
 import testClass.BusquedaAnimalesGoogle;
 
-public class Prueba {
+public class prueba {
     ChromeDriver webDriver;
     String url = "https://www.google.cl/";
 
