@@ -5,24 +5,27 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import org.openqa.selenium.chrome.ChromeDriver;
 import testClass.Logeo;
+
+import java.text.ParseException;
+
 public class pruebaPiloto {
     ChromeDriver webDriver;
     String url = "https://www.qanovagroup.com/piloto";
 
     @BeforeTest
     public void setUp(){
-        System.setProperty("webdriver.chrome.driver", "driverNavegador/chromedriver.exe");
+        System.getProperty("webdriver.chrome.driver","driverNavegador/chromedriver.exe");
         webDriver = new ChromeDriver();
         webDriver.get(url);
     }
-
-    @Test
-    public void pruebaLogin(){
-        Logeo logeo = new Logeo(webDriver);
-        logeo.CasoLogin("nvivas","qanova");
-    }
     @AfterTest
     public void closeDriver(){
-        webDriver.close();
+        //webDriver.close();
     }
+    @Test
+    public void pruebaLogin() throws ParseException {
+        Logeo logeo = new Logeo(webDriver);
+        logeo.CasoLogin1("nvivas","qanova");
+    }
+
 }

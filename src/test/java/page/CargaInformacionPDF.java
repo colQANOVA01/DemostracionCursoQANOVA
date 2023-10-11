@@ -1,17 +1,16 @@
 package page;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import utils.DriverContext;
 import utils.Reporte.EstadoPrueba;
 import utils.Reporte.PdfQaNovaReports;
+import utils.Validaciones;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -20,52 +19,50 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
-
-public class CargaInformacion {
+public class CargaInformacionPDF {
     @FindBy(id = "imPgTitle")
-        private WebElement titulo;
+    private WebElement titulo;
     @FindBy(xpath = "//input[@id='imObjectForm_1_2']")
-        private WebElement campoTexto;
+    private WebElement campoTexto;
     @FindBy(xpath = "//input[@id='imObjectForm_1_3']")
-        private WebElement campoCorreo;
+    private WebElement campoCorreo;
     @FindBy(xpath = "//textarea[@id='imObjectForm_1_4']")
-        private WebElement campoTextArea;
+    private WebElement campoTextArea;
     @FindBy(xpath = "//input[@id='imObjectForm_1_5']")
-        private WebElement campoFecha;
+    private WebElement campoFecha;
     @FindBy(id = "imObjectForm_1_6")
-        private WebElement campoLista;
+    private WebElement campoLista;
     @FindBy(xpath = "//input[@id='imObjectForm_1_7_0']")
-        private WebElement chckbxSeleccionMultiple1;
+    private WebElement chckbxSeleccionMultiple1;
     @FindBy(xpath = "//input[@id='imObjectForm_1_7_1']")
-        private WebElement chckbxSeleccionMultiple2;
+    private WebElement chckbxSeleccionMultiple2;
     @FindBy(xpath = "//input[@id='imObjectForm_1_7_2']")
-        private WebElement chckbxSeleccionMultiple3;
+    private WebElement chckbxSeleccionMultiple3;
     @FindBy(xpath = "//input[@id='imObjectForm_1_8_0']")
-        private WebElement rdbtnCombo1;
+    private WebElement rdbtnCombo1;
     @FindBy(xpath = "//input[@id='imObjectForm_1_8_1']")
-        private WebElement rdbtnCombo2;
+    private WebElement rdbtnCombo2;
     @FindBy(xpath = "//input[@id='imObjectForm_1_8_2']")
-        private WebElement rdbtnCombo3;
+    private WebElement rdbtnCombo3;
     @FindBy(id = "imObjectForm_1_5_icon")
-        private WebElement iconoCalendario;
+    private WebElement iconoCalendario;
     @FindBy(id = "imDPleft")
-        private WebElement btnRetrocederMes;
+    private WebElement btnRetrocederMes;
     @FindBy(id = "imDPright")
-        private WebElement btnAvanzarMes;
+    private WebElement btnAvanzarMes;
     @FindBy(xpath = "//input[@id='imObjectForm_1_submit']")
-        private WebElement btnEnviar;
+    private WebElement btnEnviar;
     @FindBy(xpath = "//input[@value='Resetear']")
-        private WebElement btnResetear;
-    WebDriverWait webDriverWait;
-    WebDriver webDriver;
+    private WebElement btnResetear;
 
-    public CargaInformacion(WebDriver webDriver){
-        PageFactory.initElements(webDriver, this);
-        this.webDriverWait = new WebDriverWait(webDriver,Duration.ofSeconds(30));
+
+    public CargaInformacionPDF(){
+        PageFactory.initElements(DriverContext.getDriver(), this);
     }
 
     public String recuperarTitulo(){
-        webDriverWait.until(ExpectedConditions.visibilityOf(titulo));
+        Validaciones.validarObjeto(titulo, "titulo");
+        PdfQaNovaReports.addWebReportImage("Despliegue carga de informaci\u00f3n", "Carga de informaci\u00f3n desplegado correctamente", EstadoPrueba.PASSED, false);
         String texto = titulo.getText();
         return texto;
     }
@@ -123,7 +120,7 @@ public class CargaInformacion {
 
     public void seleccionarFechaCalendario (String fecha) throws ParseException {
         iconoCalendario.click();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String hoy = simpleDateFormat.format(new Date());
         Date hoyDate = simpleDateFormat.parse(hoy);
         Date fechaDate = simpleDateFormat.parse(fecha);
@@ -141,10 +138,12 @@ public class CargaInformacion {
                 btnAvanzarMes.click();
             }
         }
-        webDriver.findElement(By.xpath("//div[@id = 'imDPCal']//td[text() = '"+ dia +"']")).click();
+        PdfQaNovaReports.addWebReportImage("Seleccion fecha calendario", "Se selecciona fecha: " + fecha + " desde calendario", EstadoPrueba.PASSED, false);
+        DriverContext.getDriver().findElement(By.xpath("//div[@id = 'imDPcal']//td[text() = '"+ dia +"']")).click();
     }
 
     public void clickBtnEnviar(){
+        PdfQaNovaReports.addWebReportImage("Ingreso de Datos", "Se ingresan los datos al formulario", EstadoPrueba.PASSED, false);
         btnEnviar.click();
     }
 

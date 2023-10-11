@@ -12,11 +12,12 @@ public class Logeo {
     private CargaInformacion cargaInformacion;
     WebDriver webDriver;
 
+
     public Logeo(WebDriver webDriver){
         this.webDriver = webDriver;
     }
 
-    public void CasoLogin(String usuario, String clave){
+    public void CasoLogin1(String usuario, String clave){
         login = new Login(webDriver);
         cargaInformacion = new CargaInformacion(webDriver);
         login.ingresarUsuario(usuario);
@@ -31,6 +32,5 @@ public class Logeo {
         cargaInformacion.seleccionMultiple("1,3");
         cargaInformacion.seleccionRadioBoton(2);
         cargaInformacion.clickBtnEnviar();
-        webDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
     }
 }
