@@ -20,7 +20,9 @@ dependencies {
     implementation("org.slf4j:log4j-over-slf4j:2.0.9")
     implementation("com.itextpdf:itextpdf:5.5.13.3")
     implementation("net.coobird:thumbnailator:0.4.20")
+    implementation("javax.mail:javax.mail-api:1.6.2")
     rewrite("org.openrewrite.recipe:rewrite-static-analysis:1.0.8")
+    implementation("com.google.code.gson:gson:2.10.1")
 }
 
 tasks.test {

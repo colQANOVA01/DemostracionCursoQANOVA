@@ -1,13 +1,30 @@
 package utils;
 
 import com.itextpdf.awt.geom.misc.RenderingHints;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import utils.Reporte.EstadoPrueba;
+import utils.Reporte.PdfQaNovaReports;
+
 import javax.imageio.ImageIO;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
+import java.util.Properties;
 
 import static utils.Constants.Constants.AMBIENTE;
 
@@ -57,4 +74,56 @@ public class Utils {
         return out.toByteArray();
     }
 
+    public static void descargarArchivo(WebElement elementoDescarga) throws IOException {
+        String ruta = ReadProperties.readFromConfig("Propiedades.properties").getProperty("directorioDescargas");
+        String url = elementoDescarga.getAttribute("href");
+        String nombreArchivo = url.substring(url.lastIndexOf("/") + 1);
+        File file = new File(ruta + "\\" + nombreArchivo);
+        if(file.exists()){
+            System.out.println("Archivo '"+ nombreArchivo +"' existe, se procede a borrarlo");
+            try{
+                file.delete();
+                System.out.println("Archivo '"+ nombreArchivo +"' borrado");
+                PdfQaNovaReports.addReport("Borrado " +nombreArchivo, "El archivo '"+ nombreArchivo +"' existe en la ruta '"+ ruta +"', por lo cual se procede a borrarlo.", EstadoPrueba.PASSED,false);
+            } catch (Exception e){
+                System.out.println("Archivo '"+ nombreArchivo +"' no pudo ser borrado");
+                PdfQaNovaReports.addReport("Borrado " +nombreArchivo, "El archivo '"+ nombreArchivo +"' existe en la ruta '"+ ruta +"', pero no pudo ser borrado.", EstadoPrueba.PASSED,true);
+
+            }
+        }
+        HttpURLConnection httpURLConnection = (HttpURLConnection) (new URL(url).openConnection());
+        httpURLConnection.setRequestMethod("GET");
+        try(InputStream inputStream = httpURLConnection.getInputStream()){
+            Files.copy(inputStream, new File(ruta + "\\" + nombreArchivo).toPath(), StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("Descarga realizada");
+            PdfQaNovaReports.addReport("Descarga Archivo " +nombreArchivo, "Se realiza correctamente la descarga del archivo '"+ nombreArchivo +"', el cual se ubica en la ruta: \n"+ ruta, EstadoPrueba.PASSED,false);
+        } catch (Exception e){
+            PdfQaNovaReports.addReport("Descarga Archivo " +nombreArchivo, "No se realiza la descarga del archivo '"+ nombreArchivo +"' ", EstadoPrueba.FAILED,true);
+
+        }
+    }
+
+    /*public static void enviarCorreo(String destinatario){
+        Properties properties = System.getProperties();
+        properties.put("mail.smtp.host","smtp.gmail.com");
+        properties.put("maul.smtp.user",ReadProperties.readFromConfig("Propiedades.properties").getProperty("usuarioCorreo"));
+        properties.put("maul.smtp.clave",ReadProperties.readFromConfig("Propiedades.properties").getProperty("claveCorreo"));
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable","true");
+        properties.put("mail.smtp.port", "587");
+        Session session = Session.getDefaultInstance(properties);
+        MimeMessage message = new MimeMessage(session);
+        try{
+          message.setFrom(new InternetAddress((String) ReadProperties.readFromConfig("Propiedades.properties").get("usuarioCorreo")));
+          message.addRecipients(MimeMessage.RecipientType.TO, destinatario);
+          message.setSubject("Resultado Prueba " + PdfQaNovaReports.getTestName());
+          message.setText("La prueba "+ PdfQaNovaReports.getTestName() + " ha quedado en estado " +PdfQaNovaReports.getFinalStatusTest());
+          Transport transport = session.getTransport("smtp");
+          transport.connect("smtp.gmail.com",ReadProperties.readFromConfig("Propiedades.properties").get("usuarioCorreo").toString(),ReadProperties.readFromConfig("Propiedades.properties").get("claveCorreo").toString());
+          transport.sendMessage(message, message.getAllRecipients());
+          transport.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }*/
 }
